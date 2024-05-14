@@ -1,0 +1,27 @@
+ sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa
+    activate server
+    server-->>browser: Status Code: 200 OK, Response: HTML Document
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate server
+    server-->>browser: Status Code: 200 OK, Response: CSS file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+    activate server
+    server-->>browser: Status Code: 200 OK, Response: JavaScript file
+    deactivate server
+
+    Note right of browser: The browser starts executing the JavaScript code that fetches the JSON from the server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    activate server
+    server-->>browser: Status Code: 200 OK, Response: [{ "content": "content", "date": "2024-05-14T05:00:49.637Z" }, ... ]
+    deactivate server
+
+    Note right of browser: List of notes is displayed in the browser (the browser executes the callback function that "redraws" the notes)
