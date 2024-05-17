@@ -5,6 +5,13 @@ const Button = ({ onClick, text }) => (
     {text}
   </button>
 )
+const Header = ({ text }) => <h1>{text}</h1>
+const Anecdote = ({ text, votesNumber }) => (
+  <>
+    <p>{text}</p>
+    <p>{`has ${votesNumber} votes`}</p>
+  </>
+)
 
 const App = () => {
   const anecdotes = [
@@ -18,6 +25,7 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
   const initialVotes = new Array(anecdotes.length).fill(0)
+  
   const getRandomNumber = () =>  Math.floor(Math.random() * anecdotes.length)
   const getNewVotes = () => {
     const newVotes = [...votes]
@@ -29,12 +37,17 @@ const App = () => {
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(initialVotes)
 
+  const maxVotes = Math.max(...votes)
+  const mostPopularIndex = votes.indexOf(maxVotes)
+
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>{`has ${votes[selected]} votes`}</p>
+      <Header text="Anecdote of the day" />
+      <Anecdote text={anecdotes[selected]} votesNumber={votes[selected]} />
       <Button onClick={() => setVotes(getNewVotes())} text="vote" />
       <Button onClick={() => setSelected(getRandomNumber())} text="next anecdote" />
+      <Header text="Anecdote with most votes" />
+      <Anecdote text={anecdotes[mostPopularIndex]} votesNumber={votes[mostPopularIndex]} />
     </div>
   )
 }
