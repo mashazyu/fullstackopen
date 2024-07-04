@@ -1,21 +1,26 @@
-import { useState } from 'react'
+import { useState } from "react";
+
+import { isPersonExist } from "./utils";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
-  ]) 
-  const [newName, setNewName] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState("");
 
-  const handleNameChange = (event) => setNewName(event.target.value)
+  const handleNameChange = (event) => setNewName(event.target.value);
   const addName = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const person = {
-      name: newName
+      name: newName,
+    };
+
+    if (isPersonExist(persons, newName)) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons(persons.concat(person));
     }
-  
-    setPersons(persons.concat(person))
-    setNewName('')
-  }
+
+    setNewName("");
+  };
 
   return (
     <div>
@@ -29,9 +34,11 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-       {persons.map(({ name }) => <p>{name}</p>)}
+      {persons.map(({ name }) => (
+        <p key={name}>{name}</p>
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
