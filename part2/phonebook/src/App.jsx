@@ -15,6 +15,7 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault();
     const person = {
+      id: persons.length + 1,
       name,
       number,
     };
@@ -53,8 +54,8 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {filteredPersons(persons, filter).map(({ name, number }) => (
-        <p key={name}>
+      {filteredPersons(persons, filter).map(({ id, name, number }) => (
+        <p key={id}>
           {name} {number}
         </p>
       ))}
