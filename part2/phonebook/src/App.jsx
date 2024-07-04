@@ -4,22 +4,26 @@ import { isPersonExist } from "./utils";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
 
-  const handleNameChange = (event) => setNewName(event.target.value);
+  const handleNameChange = (event) => setName(event.target.value);
+  const handleNumberChange = (event) => setNumber(event.target.value);
   const addName = (event) => {
     event.preventDefault();
     const person = {
-      name: newName,
+      name,
+      number,
     };
 
-    if (isPersonExist(persons, newName)) {
-      alert(`${newName} is already added to phonebook`);
+    if (isPersonExist(persons, name, number)) {
+      alert(`Either ${name} or ${number} is already added to phonebook`);
     } else {
       setPersons(persons.concat(person));
     }
 
-    setNewName("");
+    setName("");
+    setNumber("");
   };
 
   return (
@@ -27,15 +31,20 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addName}>
         <div>
-          name: <input value={newName} onChange={handleNameChange} />
+          name: <input value={name} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={number} onChange={handleNumberChange} />
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map(({ name }) => (
-        <p key={name}>{name}</p>
+      {persons.map(({ name, number }) => (
+        <p key={name}>
+          {name} {number}
+        </p>
       ))}
     </div>
   );
