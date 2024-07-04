@@ -3,3 +3,5 @@ export const isPersonExist = (persons, newName, newNumber) =>
     ({ name, number }) =>
       name.toLowerCase() === newName.toLowerCase() || number === newNumber
   );
+
+export const isInputEmpty = (name, number) => name === "" || number === "";

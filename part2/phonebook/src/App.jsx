@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { isPersonExist } from "./utils";
+import { isInputEmpty, isPersonExist } from "./utils";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -16,8 +16,16 @@ const App = () => {
       number,
     };
 
+    if (isInputEmpty(name, number)) {
+      alert(
+        "Either name or number input is empty. Please fill in both fields."
+      );
+      return;
+    }
+
     if (isPersonExist(persons, name, number)) {
       alert(`Either ${name} or ${number} is already added to phonebook`);
+      return;
     } else {
       setPersons(persons.concat(person));
     }
