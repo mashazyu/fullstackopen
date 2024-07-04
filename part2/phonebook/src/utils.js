@@ -1,7 +1,8 @@
 export const isPersonExist = (persons, newName, newNumber) =>
   persons.some(
     ({ name, number }) =>
-      name.toLowerCase() === newName.toLowerCase() || number === newNumber
+      name.toLowerCase() === newName.toLowerCase() ||
+      number.replace(/[\s.-]/g, "") === newNumber.replace(/[\s.-]/g, "")
   );
 
 export const isInputEmpty = (name, number) => name === "" || number === "";
