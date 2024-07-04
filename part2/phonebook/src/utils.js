@@ -5,6 +5,8 @@ export const isPersonExist = (persons, newName, newNumber) =>
   );
 
 export const isInputEmpty = (name, number) => name === "" || number === "";
+export const isValidPhoneNumber = (number) =>
+  /^[\+\(]?[\d\-\.\s]+$/.test(number);
 
 export const filteredPersons = (persons, filter) =>
   persons.filter(({ name }) =>

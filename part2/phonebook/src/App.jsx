@@ -1,6 +1,11 @@
 import { useState } from "react";
 
-import { isInputEmpty, isPersonExist, filteredPersons } from "./utils";
+import {
+  isInputEmpty,
+  isPersonExist,
+  filteredPersons,
+  isValidPhoneNumber,
+} from "./utils";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -21,9 +26,12 @@ const App = () => {
     };
 
     if (isInputEmpty(name, number)) {
-      alert(
-        "Either name or number input is empty. Please fill in both fields."
-      );
+      alert("Either name or number input is empty. Please fill in both fields");
+      return;
+    }
+
+    if (!isValidPhoneNumber(number)) {
+      alert(`${number} is not a valid pnone number`);
       return;
     }
 
