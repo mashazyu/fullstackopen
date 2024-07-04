@@ -5,3 +5,8 @@ export const isPersonExist = (persons, newName, newNumber) =>
   );
 
 export const isInputEmpty = (name, number) => name === "" || number === "";
+
+export const filteredPersons = (persons, filter) =>
+  persons.filter(({ name }) =>
+    name.toLowerCase().includes(filter.toLowerCase())
+  );
