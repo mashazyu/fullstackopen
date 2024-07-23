@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
@@ -10,6 +9,7 @@ import {
   filteredPersons,
   isValidPhoneNumber,
 } from "./utils";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState(null);
@@ -18,9 +18,14 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then(({ data }) => setPersons(data));
+    personService
+      .getAll()
+      .then((initialData) => setPersons(initialData))
+      .catch((error) => {
+        alert(
+          `The following error occured while retrieving data from the server: '${error}'.`
+        );
+      });
   }, []);
 
   const handleNameChange = (event) => setName(event.target.value);
@@ -49,11 +54,18 @@ const App = () => {
       alert(`Either ${name} or ${number} is already added to phonebook`);
       return;
     } else {
-      axios.post("http://localhost:3001/persons", person).then(() => {
-        setPersons(persons.concat(person));
-        setName("");
-        setNumber("");
-      });
+      personService
+        .create(person)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setName("");
+          setNumber("");
+        })
+        .catch((error) => {
+          alert(
+            `The following error occured while creating new contact '${error}'.`
+          );
+        });
     }
   };
 
@@ -63,6 +75,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
+      <h2>Add new</h2>
       <PersonForm
         addName={addName}
         name={name}
