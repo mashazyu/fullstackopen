@@ -31,6 +31,18 @@ const App = () => {
   const handleNameChange = (event) => setName(event.target.value);
   const handleNumberChange = (event) => setNumber(event.target.value);
   const handleFilterChange = (event) => setFilter(event.target.value);
+  const handleDelete = ({ id, name }) => {
+    if (confirm(`Delete ${name}?`)) {
+      personService
+        .destroy(id)
+        .then((person) =>
+          setPersons(persons.filter(({ id }) => id !== person.id))
+        )
+        .catch((error) => {
+          alert(`Error occured while deleting a contact: '${error}'.`);
+        });
+    }
+  };
 
   const addName = (event) => {
     event.preventDefault();
@@ -84,7 +96,10 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons(persons, filter)} />
+      <Persons
+        persons={filteredPersons(persons, filter)}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };

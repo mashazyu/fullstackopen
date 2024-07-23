@@ -9,12 +9,20 @@ const getAll = async () => {
 
 const create = async (newObject) => {
   const request = axios.post(baseUrl, newObject);
-
   const { data } = await request;
+
+  return data;
+};
+
+const destroy = async (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  const { data } = await request;
+
   return data;
 };
 
 export default {
   getAll,
   create,
+  destroy,
 };
