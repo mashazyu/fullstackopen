@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
@@ -11,10 +12,16 @@ import {
 } from "./utils";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [persons, setPersons] = useState(null);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then(({ data }) => setPersons(data));
+  }, []);
 
   const handleNameChange = (event) => setName(event.target.value);
   const handleNumberChange = (event) => setNumber(event.target.value);
@@ -45,9 +52,15 @@ const App = () => {
       setPersons(persons.concat(person));
     }
 
+    axios.post("http://localhost:3001/notes", noteObject).then((response) => {
+      console.log(response);
+    });
+
     setName("");
     setNumber("");
   };
+
+  if (!persons) return null;
 
   return (
     <div>
