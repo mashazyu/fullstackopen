@@ -1,7 +1,9 @@
-export const isPersonExist = (persons, newName, newNumber) =>
+export const getExistingPerson = (persons, newName) =>
+  persons.find(({ name }) => name.toLowerCase() === newName.toLowerCase());
+
+export const isNumberExist = (persons, newNumber) =>
   persons.some(
-    ({ name, number }) =>
-      name.toLowerCase() === newName.toLowerCase() ||
+    ({ number }) =>
       number.replace(/[\s.-]/g, "") === newNumber.replace(/[\s.-]/g, "")
   );
 

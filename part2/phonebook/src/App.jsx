@@ -5,7 +5,8 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import {
   isInputEmpty,
-  isPersonExist,
+  getExistingPerson,
+  isNumberExist,
   filteredPersons,
   isValidPhoneNumber,
 } from "./utils";
@@ -62,9 +63,28 @@ const App = () => {
       return;
     }
 
-    if (isPersonExist(persons, name, number)) {
-      alert(`Either ${name} or ${number} is already added to phonebook`);
+    if (isNumberExist(persons, number)) {
+      alert(`${number} is already assigned to one of the users`);
       return;
+    }
+
+    const existingPerson = getExistingPerson(persons, name);
+    if (existingPerson) {
+      personService
+        .update(person, existingPerson.id)
+        .then((returnedPerson) => {
+          const updatedPersons = persons.map((person) =>
+            person.id === returnedPerson.id ? returnedPerson : person
+          );
+          setPersons(updatedPersons);
+          setName("");
+          setNumber("");
+        })
+        .catch((error) => {
+          alert(
+            `The following error occured while creating new contact '${error}'.`
+          );
+        });
     } else {
       personService
         .create(person)
