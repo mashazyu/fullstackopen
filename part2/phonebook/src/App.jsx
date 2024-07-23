@@ -49,15 +49,12 @@ const App = () => {
       alert(`Either ${name} or ${number} is already added to phonebook`);
       return;
     } else {
-      setPersons(persons.concat(person));
+      axios.post("http://localhost:3001/persons", person).then(() => {
+        setPersons(persons.concat(person));
+        setName("");
+        setNumber("");
+      });
     }
-
-    axios.post("http://localhost:3001/notes", noteObject).then((response) => {
-      console.log(response);
-    });
-
-    setName("");
-    setNumber("");
   };
 
   if (!persons) return null;
