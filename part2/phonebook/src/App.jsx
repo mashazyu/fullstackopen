@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import {
   isInputEmpty,
   getExistingPerson,
@@ -17,18 +18,31 @@ const App = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     personService
       .getAll()
       .then((initialData) => setPersons(initialData))
       .catch((error) => {
-        alert(
+        setError(
           `The following error occured while retrieving data from the server: '${error}'.`
         );
       });
   }, []);
 
+  useEffect(() => {
+    if (error !== null) {
+      setTimeout(() => setError(null), 5000);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (message !== null) {
+      setTimeout(() => setMessage(null), 5000);
+    }
+  }, [message]);
   const handleNameChange = (event) => setName(event.target.value);
   const handleNumberChange = (event) => setNumber(event.target.value);
   const handleFilterChange = (event) => setFilter(event.target.value);
@@ -36,11 +50,12 @@ const App = () => {
     if (confirm(`Delete ${name}?`)) {
       personService
         .destroy(id)
-        .then((person) =>
-          setPersons(persons.filter(({ id }) => id !== person.id))
-        )
+        .then((person) => {
+          setPersons(persons.filter(({ id }) => id !== person.id));
+          setMessage(`Deleted ${person.name}`);
+        })
         .catch((error) => {
-          alert(`Error occured while deleting a contact: '${error}'.`);
+          setError(`Error occured while deleting a contact: '${error}'.`);
         });
     }
   };
@@ -54,17 +69,19 @@ const App = () => {
     };
 
     if (isInputEmpty(name, number)) {
-      alert("Either name or number input is empty. Please fill in both fields");
+      setError(
+        "Either name or number input is empty. Please fill in both fields"
+      );
       return;
     }
 
     if (!isValidPhoneNumber(number)) {
-      alert(`${number} is not a valid pnone number`);
+      setError(`${number} is not a valid pnone number`);
       return;
     }
 
     if (isNumberExist(persons, number)) {
-      alert(`${number} is already assigned to one of the users`);
+      setError(`${number} is already assigned to one of the users`);
       return;
     }
 
@@ -77,11 +94,12 @@ const App = () => {
             person.id === returnedPerson.id ? returnedPerson : person
           );
           setPersons(updatedPersons);
+          setMessage(`Updated ${returnedPerson.name}`);
           setName("");
           setNumber("");
         })
         .catch((error) => {
-          alert(
+          setError(
             `The following error occured while creating new contact '${error}'.`
           );
         });
@@ -90,11 +108,12 @@ const App = () => {
         .create(person)
         .then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson));
+          setMessage(`Added ${returnedPerson.name}`);
           setName("");
           setNumber("");
         })
         .catch((error) => {
-          alert(
+          setError(
             `The following error occured while creating new contact '${error}'.`
           );
         });
@@ -106,6 +125,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={error || message} isError={error} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add new</h2>
       <PersonForm
