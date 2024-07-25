@@ -4,19 +4,11 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import Notification from "./components/Notification";
-import {
-  isInputEmpty,
-  getExistingPerson,
-  isNumberExist,
-  filteredPersons,
-  isValidPhoneNumber,
-} from "./utils";
+import { getExistingPerson, filteredPersons, isNumberExist } from "./utils";
 import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState(null);
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -33,18 +25,13 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (error !== null) {
-      setTimeout(() => setError(null), 5000);
-    }
+    if (error !== null) setTimeout(() => setError(null), 5000);
   }, [error]);
 
   useEffect(() => {
-    if (message !== null) {
-      setTimeout(() => setMessage(null), 5000);
-    }
+    if (message !== null) setTimeout(() => setMessage(null), 5000);
   }, [message]);
-  const handleNameChange = (event) => setName(event.target.value);
-  const handleNumberChange = (event) => setNumber(event.target.value);
+
   const handleFilterChange = (event) => setFilter(event.target.value);
   const handleDelete = ({ id, name }) => {
     if (confirm(`Delete ${name}?`)) {
@@ -60,29 +47,15 @@ const App = () => {
     }
   };
 
-  const addName = (event) => {
-    event.preventDefault();
+  const addName = (name, number) => {
     const person = {
       id: persons.length + 1,
       name,
       number,
     };
 
-    if (isInputEmpty(name, number)) {
-      setError(
-        "Either name or number input is empty. Please fill in both fields"
-      );
-      return;
-    }
-
-    if (!isValidPhoneNumber(number)) {
-      setError(`${number} is not a valid pnone number`);
-      return;
-    }
-
     if (isNumberExist(persons, number)) {
-      setError(`${number} is already assigned to one of the users`);
-      return;
+      setError(`Number ${number} is assigned to one of the existing contacts.`);
     }
 
     const existingPerson = getExistingPerson(persons, name);
@@ -95,8 +68,6 @@ const App = () => {
           );
           setPersons(updatedPersons);
           setMessage(`Updated ${returnedPerson.name}`);
-          setName("");
-          setNumber("");
         })
         .catch((error) => {
           setError(
@@ -109,8 +80,6 @@ const App = () => {
         .then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson));
           setMessage(`Added ${returnedPerson.name}`);
-          setName("");
-          setNumber("");
         })
         .catch((error) => {
           setError(
@@ -125,16 +94,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={error || message} isError={error} />
+      <Notification message={error} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add new</h2>
-      <PersonForm
-        addName={addName}
-        name={name}
-        handleNameChange={handleNameChange}
-        number={number}
-        handleNumberChange={handleNumberChange}
-      />
+      <PersonForm addName={addName} />
       <h2>Numbers</h2>
       <Persons
         persons={filteredPersons(persons, filter)}
