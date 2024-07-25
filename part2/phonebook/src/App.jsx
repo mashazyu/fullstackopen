@@ -4,7 +4,12 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import Notification from "./components/Notification";
-import { getExistingPerson, filteredPersons, isNumberExist } from "./utils";
+import {
+  generateId,
+  getExistingPerson,
+  filteredPersons,
+  isNumberExist,
+} from "./utils";
 import personService from "./services/persons";
 
 const App = () => {
@@ -49,7 +54,7 @@ const App = () => {
 
   const addName = (name, number) => {
     const person = {
-      id: persons.length + 1,
+      id: generateId(persons),
       name,
       number,
     };

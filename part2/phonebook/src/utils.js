@@ -28,3 +28,9 @@ export const isIncorrectInput = (name, number) => {
 
   return error;
 };
+
+export const generateId = (persons) => {
+  const largestId = Math.max(...persons.map(({ id }) => id));
+
+  return largestId + 1;
+};
