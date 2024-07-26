@@ -1,9 +1,21 @@
 import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0);
+import Filter from "./components/Filter";
 
-  return <></>;
+function App() {
+  const [filter, setFilter] = useState("");
+
+  const handleFilterChange = (event) => setFilter(event.target.value);
+
+  return (
+    <>
+      <Filter
+        text="find countries"
+        filter={filter}
+        handleFilterChange={handleFilterChange}
+      />
+    </>
+  );
 }
 
 export default App;
