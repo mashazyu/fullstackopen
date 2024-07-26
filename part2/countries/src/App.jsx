@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Filter from "./components/Filter";
+import CountryList from "./components/CountryList";
 
 import countriesService from "./services/countries";
 
@@ -40,7 +41,7 @@ function App() {
         filter={filter}
         handleFilterChange={handleFilterChange}
       />
-      {filteredCountries?.map((country) => country.name.common)}
+      <CountryList countries={filteredCountries} />
     </>
   );
 }
