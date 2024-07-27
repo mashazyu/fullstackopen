@@ -10,12 +10,8 @@ function App() {
   const [filteredCountries, setFilteredCountries] = useState(null);
   const [filter, setFilter] = useState("");
   const [error, setError] = useState(null);
-  const [showCountry, setShowCountry] = useState(null);
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-    setShowCountry(null);
-  };
+  const handleFilterChange = (event) => setFilter(event.target.value);
 
   useEffect(() => {
     countriesService
@@ -37,9 +33,6 @@ function App() {
   }, [countries, filter]);
 
   if (error) return <>{error}</>;
-  if (filteredCountries?.length === 0) {
-    setShowCountry(filteredCountries[0]);
-  }
 
   return (
     <>
@@ -50,8 +43,7 @@ function App() {
       />
       <CountryList
         countries={filteredCountries}
-        showCountry={showCountry}
-        setCountry={setShowCountry}
+        setCountries={setFilteredCountries}
       />
     </>
   );
