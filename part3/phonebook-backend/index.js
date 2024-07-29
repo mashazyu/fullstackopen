@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 
 let data = [
@@ -27,6 +28,7 @@ let data = [
 
 const generateId = () => Math.floor(Math.random() * 1000);
 
+app.use(cors());
 app.use(express.json());
 
 morgan.token("body", (req) => JSON.stringify(req.body));
@@ -93,9 +95,15 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  persons = data.filter((person) => person.id !== id);
+  const person = data.find((person) => person.id === id);
 
-  response.status(204).end();
+  if (person) {
+    persons = data.filter((person) => person.id !== id);
+
+    response.status(200).json(person);
+  } else {
+    response.status(404).end();
+  }
 });
 
 const PORT = 3001;
