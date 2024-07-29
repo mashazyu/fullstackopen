@@ -4,30 +4,15 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import Notification from "./components/Notification";
-import {
-  generateId,
-  getExistingPerson,
-  filteredPersons,
-  isNumberExist,
-} from "./utils";
-import personService from "./services/persons";
+
+import { useFetchAndFilterPersons } from "./hooks/useFetchAndFilterPersons";
+import { generateId, getExistingPerson, isNumberExist } from "./utils";
 
 const App = () => {
-  const [persons, setPersons] = useState(null);
   const [filter, setFilter] = useState("");
-  const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
-
-  useEffect(() => {
-    personService
-      .getAll()
-      .then((initialData) => setPersons(initialData))
-      .catch((error) => {
-        setError(
-          `The following error occured while retrieving data from the server: '${error}'.`
-        );
-      });
-  }, []);
+  const { persons, create, update, destroy, error, setError } =
+    useFetchAndFilterPersons(filter);
 
   useEffect(() => {
     if (error !== null) setTimeout(() => setError(null), 5000);
@@ -40,15 +25,7 @@ const App = () => {
   const handleFilterChange = (event) => setFilter(event.target.value);
   const handleDelete = ({ id, name }) => {
     if (confirm(`Delete ${name}?`)) {
-      personService
-        .destroy(id)
-        .then((person) => {
-          setPersons(persons.filter(({ id }) => id !== person.id));
-          setMessage(`Deleted ${person.name}`);
-        })
-        .catch((error) => {
-          setError(`Error occured while deleting a contact: '${error}'.`);
-        });
+      destroy(id).then(({ name }) => setMessage(`Deleted ${name}`));
     }
   };
 
@@ -65,49 +42,23 @@ const App = () => {
 
     const existingPerson = getExistingPerson(persons, name);
     if (existingPerson) {
-      personService
-        .update(person, existingPerson.id)
-        .then((returnedPerson) => {
-          const updatedPersons = persons.map((person) =>
-            person.id === returnedPerson.id ? returnedPerson : person
-          );
-          setPersons(updatedPersons);
-          setMessage(`Updated ${returnedPerson.name}`);
-        })
-        .catch((error) => {
-          setError(
-            `The following error occured while creating new contact '${error}'.`
-          );
-        });
+      update(person, existingPerson.id).then(({ name }) =>
+        setMessage(`Updated ${name}`)
+      );
     } else {
-      personService
-        .create(person)
-        .then((returnedPerson) => {
-          setPersons(persons.concat(returnedPerson));
-          setMessage(`Added ${returnedPerson.name}`);
-        })
-        .catch((error) => {
-          setError(
-            `The following error occured while creating new contact '${error}'.`
-          );
-        });
+      create(person).then(({ name }) => setMessage(`Added ${name}`));
     }
   };
-
-  if (!persons) return null;
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={error} />
+      <Notification message={error || message} isError={error} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add new</h2>
       <PersonForm addName={addName} />
       <h2>Numbers</h2>
-      <Persons
-        persons={filteredPersons(persons, filter)}
-        handleDelete={handleDelete}
-      />
+      {persons && <Persons persons={persons} handleDelete={handleDelete} />}
     </div>
   );
 };
