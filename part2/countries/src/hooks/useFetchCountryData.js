@@ -9,6 +9,8 @@ export const useFetchCountryData = (countryName) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     countriesService
       .get(countryName)
       .then((data) => setCountry(data))
@@ -17,9 +19,13 @@ export const useFetchCountryData = (countryName) => {
           `The following error occured while retrieving country data from the server: '${error}'.`
         );
       });
+
+    return () => controller.abort();
   }, [countryName]);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     if (country) {
       weatherService
         .get({ lat: country?.latlng[0], lon: country?.latlng[1] })
@@ -30,6 +36,8 @@ export const useFetchCountryData = (countryName) => {
           );
         });
     }
+
+    return () => controller.abort();
   }, [country]);
 
   return [country, weather, error];
