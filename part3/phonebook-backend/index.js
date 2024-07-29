@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 let data = [
@@ -27,6 +28,7 @@ let data = [
 const generateId = () => Math.floor(Math.random() * 1000);
 
 app.use(express.json());
+app.use(morgan("tiny"));
 
 app.get("/", (request, response) => {
   response.send("<h1>Server is up and running</h1>");
