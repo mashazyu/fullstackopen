@@ -24,6 +24,10 @@ let data = [
   },
 ];
 
+const generateId = () => Math.floor(Math.random() * 1000);
+
+app.use(express.json());
+
 app.get("/", (request, response) => {
   response.send("<h1>Server is up and running</h1>");
 });
@@ -38,6 +42,36 @@ app.get("/api/info", (request, response) => {
 
 app.get("/api/persons", (request, response) => {
   response.json(data);
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  if (!body) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "name is missing",
+    });
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: "phone number is missing",
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+  data = data.concat(person);
+  response.json(person);
 });
 
 app.get("/api/persons/:id", (request, response) => {
