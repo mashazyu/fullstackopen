@@ -28,7 +28,11 @@ let data = [
 const generateId = () => Math.floor(Math.random() * 1000);
 
 app.use(express.json());
-app.use(morgan("tiny"));
+
+morgan.token("body", (req) => JSON.stringify(req.body));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 app.get("/", (request, response) => {
   response.send("<h1>Server is up and running</h1>");
