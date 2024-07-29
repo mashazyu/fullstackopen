@@ -28,6 +28,14 @@ app.get("/", (request, response) => {
   response.send("<h1>Server is up and running</h1>");
 });
 
+app.get("/api/info", (request, response) => {
+  const dateTime = new Date().toString();
+  let info = `<p>Phonebook has info for ${data.length} people</p>
+    <p>${dateTime}</p>`;
+
+  response.send(info);
+});
+
 app.get("/api/persons", (request, response) => {
   response.json(data);
 });
