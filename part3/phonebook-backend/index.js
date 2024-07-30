@@ -80,21 +80,26 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
     id: generateId(),
-  };
-  data = data.concat(person);
-  response.json(person);
+  });
+
+  person.save().then((data) => {
+    response.json(data);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  const person = data.find((person) => person.id === id);
 
-  if (person) {
-    response.json(person);
+  if (id) {
+    Person.findById(id)
+      .exec()
+      .then((data) => {
+        response.json(data);
+      });
   } else {
     response.status(404).end();
   }
@@ -102,14 +107,13 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  const person = data.find((person) => person.id === id);
-  console.log("// id ", id);
-  console.log("// person ", person);
-  console.log("// data ", data);
-  if (person) {
-    persons = data.filter((person) => person.id !== id);
 
-    response.status(200).json(person);
+  if (id) {
+    Person.findOneAndDelete({ _id: id })
+      .exec()
+      .then((data) => {
+        response.json(data);
+      });
   } else {
     response.status(404).end();
   }
