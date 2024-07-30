@@ -27,6 +27,8 @@ let data = [
 ];
 
 const generateId = () => Math.floor(Math.random() * 1000);
+// serve static frontend content
+app.use(express.static("dist"));
 
 app.use(cors());
 app.use(express.json());
@@ -96,7 +98,9 @@ app.get("/api/persons/:id", (request, response) => {
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id;
   const person = data.find((person) => person.id === id);
-
+  console.log("// id ", id);
+  console.log("// person ", person);
+  console.log("// data ", data);
   if (person) {
     persons = data.filter((person) => person.id !== id);
 
