@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import Notification from "./Notification";
 
-import { isIncorrectInput } from "../utils";
-
 const PersonForm = ({ addName }) => {
   const nameRef = useRef("");
   const numberRef = useRef("");
@@ -16,12 +14,7 @@ const PersonForm = ({ addName }) => {
   const handleOnSubmint = (event) => {
     event.preventDefault();
 
-    if (isIncorrectInput(nameRef.current.value, numberRef.current.value)) {
-      setError(`Incorrect input.`);
-    } else {
-      addName(nameRef.current.value, numberRef.current.value);
-      if (error) setError(null);
-    }
+    addName(nameRef.current.value, numberRef.current.value);
   };
 
   return (

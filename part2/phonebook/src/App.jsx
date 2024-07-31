@@ -6,7 +6,7 @@ import Persons from "./components/Persons";
 import Notification from "./components/Notification";
 
 import { useFetchAndFilterPersons } from "./hooks/useFetchAndFilterPersons";
-import { generateId, getExistingPerson, isNumberExist } from "./utils";
+import { getExistingPerson, isNumberExist } from "./utils";
 
 const App = () => {
   const [filter, setFilter] = useState("");
@@ -31,7 +31,6 @@ const App = () => {
 
   const addName = (name, number) => {
     const person = {
-      id: generateId(persons),
       name,
       number,
     };
@@ -43,9 +42,11 @@ const App = () => {
 
     const existingPerson = getExistingPerson(persons, name);
     if (existingPerson) {
-      update(person, existingPerson.id).then(({ name }) =>
-        setMessage(`Updated ${name}`)
-      );
+      update(person, existingPerson.id).then((updatedPerson) => {
+        if (updatedPerson && !error) {
+          setMessage(`Updated ${updatedPerson.name}`);
+        }
+      });
     } else {
       create(person).then((newPerson) => {
         if (newPerson && !error) {

@@ -51,7 +51,9 @@ export const useFetchAndFilterPersons = (filter) => {
       })
       .catch((error) => {
         setError(
-          `The following error occured while creating new contact '${error}'.`
+          `The following error occured while creating new contact '${
+            error?.response?.data?.error || error
+          }'.`
         );
       });
 
