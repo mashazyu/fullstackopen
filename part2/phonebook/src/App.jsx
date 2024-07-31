@@ -47,7 +47,11 @@ const App = () => {
         setMessage(`Updated ${name}`)
       );
     } else {
-      create(person).then(({ name }) => setMessage(`Added ${name}`));
+      create(person).then((newPerson) => {
+        if (newPerson && !error) {
+          setMessage(`Added ${newPerson?.name}`);
+        }
+      });
     }
   };
 

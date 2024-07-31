@@ -3,14 +3,15 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const logger = require("./utils/logger");
+const middleware = require("./utils/middleware");
 
 const Person = require("./models/person");
 
 const app = express();
-// serve static frontend content
-app.use(express.static("dist"));
 
 app.use(cors());
+// serve static frontend content
+app.use(express.static("dist"));
 app.use(express.json());
 
 morgan.token("body", (req) => JSON.stringify(req.body));
@@ -42,7 +43,7 @@ app.get("/api/persons", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response, next) => {
+app.post("/api/persons", (request, response) => {
   const body = request.body;
 
   if (!body || !body.number || !body.name) {
@@ -62,7 +63,9 @@ app.post("/api/persons", (request, response, next) => {
     .then((data) => {
       response.json(data);
     })
-    .catch((error) => next(error));
+    .catch((error) => {
+      response.status(400).json(error);
+    });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -122,21 +125,8 @@ app.delete("/api/persons/:id", (request, response, next) => {
   }
 });
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
-};
-
-// handler of requests with unknown endpoint
-app.use(unknownEndpoint);
-
-const errorHandler = (error, request, response, next) => {
-  logger.error(error.message);
-
-  next(error);
-};
-
-// this has to be the last loaded middleware, also all the routes should be registered before this!
-app.use(errorHandler);
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
