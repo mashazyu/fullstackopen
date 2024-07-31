@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "api/persons";
+const baseUrl = "http://localhost:3001/api/persons";
 
 const getAll = async () => {
   const request = axios.get(baseUrl);
@@ -24,7 +24,7 @@ const update = async (newObject, id) => {
 const destroy = async (id) => {
   const request = axios.delete(`${baseUrl}/${id}`);
   const { data } = await request;
-  console.log("// data in destroy ", data);
+
   return data;
 };
 
