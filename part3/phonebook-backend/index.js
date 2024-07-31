@@ -5,31 +5,6 @@ const cors = require("cors");
 const Person = require("./models/person");
 
 const app = express();
-
-let data = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
-const generateId = () => Math.floor(Math.random() * 1000);
 // serve static frontend content
 app.use(express.static("dist"));
 
@@ -47,7 +22,7 @@ app.get("/", (request, response) => {
 
 app.get("/api/info", (request, response) => {
   const dateTime = new Date().toString();
-  let info = `<p>Phonebook has info for ${data.length} people</p>
+  let info = `<p>Phonebook has info for ${Person.length} people</p>
     <p>${dateTime}</p>`;
 
   response.send(info);
@@ -83,7 +58,6 @@ app.post("/api/persons", (request, response) => {
   const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
   });
 
   person.save().then((data) => {
@@ -99,6 +73,31 @@ app.get("/api/persons/:id", (request, response) => {
       .exec()
       .then((data) => {
         response.json(data);
+      });
+  } else {
+    response.status(404).end();
+  }
+});
+
+app.put("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+  const body = request.body;
+
+  if (!body) {
+    response.status(400).end();
+  }
+
+  const personObject = {
+    name: body.name,
+    number: body.number,
+  };
+
+  if (id) {
+    Person.findByIdAndUpdate(id, personObject)
+      .exec()
+      .then((data) => {
+        console.log("// {} ", { ...personObject, _id: id });
+        response.json({ ...personObject, id: id });
       });
   } else {
     response.status(404).end();

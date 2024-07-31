@@ -38,6 +38,7 @@ const App = () => {
 
     if (isNumberExist(persons, number)) {
       setError(`Number ${number} is assigned to one of the existing contacts.`);
+      return;
     }
 
     const existingPerson = getExistingPerson(persons, name);
