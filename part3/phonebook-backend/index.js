@@ -98,7 +98,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
 
   if (id) {
-    Person.findOneAndDelete(id)
+    Person.findByIdAndDelete(id)
       .then((data) => response.json(data))
       .catch((error) => next(error));
   } else {
