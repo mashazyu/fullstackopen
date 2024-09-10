@@ -6,7 +6,7 @@ import Persons from "./components/Persons";
 import Notification from "./components/Notification";
 
 import { useFetchAndFilterPersons } from "./hooks/useFetchAndFilterPersons";
-import { getExistingPerson, isNumberExist } from "./utils";
+import { getExistingPerson } from "./utils";
 
 const App = () => {
   const [filter, setFilter] = useState("");
@@ -29,28 +29,28 @@ const App = () => {
     }
   };
 
-  const addName = (name, number) => {
-    const person = {
-      name,
-      number,
-    };
-
-    if (isNumberExist(persons, number)) {
-      setError(`Number ${number} is assigned to one of the existing contacts.`);
-      return;
-    }
-
+  const addName = async (name, number) => {
+    const person = { name, number };
     const existingPerson = getExistingPerson(persons, name);
+
     if (existingPerson) {
-      update(person, existingPerson.id).then((updatedPerson) => {
+      return update(person, existingPerson.id).then((updatedPerson) => {
         if (updatedPerson && !error) {
           setMessage(`Updated ${updatedPerson.name}`);
+
+          return true;
+        } else {
+          return false;
         }
       });
     } else {
-      create(person).then((newPerson) => {
+      return create(person).then((newPerson) => {
         if (newPerson && !error) {
           setMessage(`Added ${newPerson?.name}`);
+
+          return true;
+        } else {
+          return false;
         }
       });
     }

@@ -11,10 +11,18 @@ const PersonForm = ({ addName }) => {
     if (error !== null) setTimeout(() => setError(null), 5000);
   }, [error]);
 
-  const handleOnSubmint = (event) => {
+  const handleOnSubmint = async (event) => {
     event.preventDefault();
 
-    addName(nameRef.current.value, numberRef.current.value);
+    const isSuccess = await addName(
+      nameRef.current.value,
+      numberRef.current.value
+    );
+
+    if (isSuccess) {
+      nameRef.current.value = "";
+      numberRef.current.value = "";
+    }
   };
 
   return (

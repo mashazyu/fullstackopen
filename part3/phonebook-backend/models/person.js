@@ -20,7 +20,7 @@ const personSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 3,
-    required: true,
+    required: [true, "User name is required"],
   },
   number: {
     type: String,
@@ -31,7 +31,8 @@ const personSchema = new mongoose.Schema({
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
-    required: [true, "User phone number required"],
+    required: [true, "User phone number is required"],
+    unique: [true, "This phone number belongs to the existing user"],
   },
 });
 

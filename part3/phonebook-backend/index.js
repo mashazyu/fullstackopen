@@ -1,10 +1,11 @@
 require("dotenv").config();
+
 const express = require("express");
-const morgan = require("morgan");
+const morgan = require("morgan"); // logger
 const cors = require("cors");
+
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
-
 const Person = require("./models/person");
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.static("dist"));
 app.use(express.json());
 
 morgan.token("body", (req) => JSON.stringify(req.body));
+// custom logger configuration
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
@@ -43,29 +45,14 @@ app.get("/api/persons", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
-  const body = request.body;
-
-  if (!body || !body.number || !body.name) {
-    next({ message: "necessary data is missing" });
-    return response.status(400).json({
-      error: "necessary data is missing",
-    });
-  }
-
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  });
+app.post("/api/persons", (request, response, next) => {
+  const { name, number } = request.body;
+  const person = new Person({ name, number });
 
   person
     .save()
-    .then((data) => {
-      response.json(data);
-    })
-    .catch((error) => {
-      response.status(400).json(error);
-    });
+    .then((data) => response.json(data))
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -91,8 +78,7 @@ app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
 
   if (!body) {
-    next({ message: "no info provided" });
-    response.status(400).end();
+    response.status(400).send({ error: "no info provided" });
   }
 
   const personObject = {
@@ -124,7 +110,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
       })
       .catch((error) => next(error));
   } else {
-    response.status(404).end();
+    response.status(404).send({ error: "no id provided" });
   }
 });
 
