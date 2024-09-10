@@ -32,9 +32,7 @@ export const useFetchAndFilterPersons = (filter) => {
       })
       .catch((error) => {
         setError(
-          `The following error occured while creating new contact '${
-            error?.response?.data?.message || error
-          }'.`
+          `The following error occured while creating new contact '${error}'.`
         );
       });
 
@@ -51,9 +49,7 @@ export const useFetchAndFilterPersons = (filter) => {
       })
       .catch((error) => {
         setError(
-          `The following error occured while creating new contact '${
-            error?.response?.data?.error || error
-          }'.`
+          `The following error occured while creating new contact '${error}'.`
         );
       });
 
