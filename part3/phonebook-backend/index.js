@@ -39,15 +39,15 @@ app.get("/api/info", (request, response, next) => {
 
 app.get("/api/persons", (request, response, next) => {
   Person.find({})
-    .then((data) => {
-      response.json(data);
-    })
+    .then((data) => response.json(data))
     .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response, next) => {
-  const { name, number } = request.body;
-  const person = new Person({ name, number });
+  const person = new Person({
+    name: request.body.name,
+    number: request.body.number,
+  });
 
   person
     .save()
@@ -75,22 +75,19 @@ app.get("/api/persons/:id", (request, response, next) => {
 
 app.put("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
-  const { name, number } = request.body;
+  const name = request.body.name;
+  const number = request.body.number;
 
   if (!name || !number) {
     response.status(400).send({ error: "no info provided" });
   }
 
   const personObject = { name, number };
+  const params = { new: true, runValidators: true };
 
   if (id) {
-    Person.findByIdAndUpdate(id, personObject, {
-      new: true,
-      runValidators: true,
-    })
-      .then((data) => {
-        response.json({ ...personObject, id: id });
-      })
+    Person.findByIdAndUpdate(id, personObject, params)
+      .then(() => response.json({ ...personObject, id: id }))
       .catch((error) => next(error));
   } else {
     response.status(404).end();
@@ -102,9 +99,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
 
   if (id) {
     Person.findOneAndDelete(id)
-      .then((data) => {
-        response.json(data);
-      })
+      .then((data) => response.json(data))
       .catch((error) => next(error));
   } else {
     response.status(404).send({ error: "no id provided" });

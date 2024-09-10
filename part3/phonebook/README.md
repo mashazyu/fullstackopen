@@ -1,3 +1,3 @@
 # Fullstackopen course
 
-Excercises 2.6 - 2.10 from part 2
+Frontend part of the part 3 of the Fullstack Open course.

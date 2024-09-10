@@ -9,12 +9,10 @@ logger.info("connecting to", url);
 
 mongoose
   .connect(url)
-  .then((result) => {
-    logger.info("connected to MongoDB");
-  })
-  .catch((error) => {
-    logger.error("error connecting to MongoDB:", error.message);
-  });
+  .then((result) => logger.info("connected to MongoDB"))
+  .catch((error) =>
+    logger.error("error connecting to MongoDB:", error.message)
+  );
 
 const personSchema = new mongoose.Schema({
   name: {
