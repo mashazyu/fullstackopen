@@ -75,16 +75,13 @@ app.get("/api/persons/:id", (request, response, next) => {
 
 app.put("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
-  const body = request.body;
+  const { name, number } = request.body;
 
-  if (!body) {
+  if (!name || !number) {
     response.status(400).send({ error: "no info provided" });
   }
 
-  const personObject = {
-    name: body.name,
-    number: body.number,
-  };
+  const personObject = { name, number };
 
   if (id) {
     Person.findByIdAndUpdate(id, personObject, {
