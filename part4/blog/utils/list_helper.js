@@ -20,6 +20,29 @@ const favoriteBlog = (blogs) => {
     }
 }
 
+const groupedBlogs = (blogs) => blogs.reduce((acc, curr) => {
+    const groupKey = curr["author"];
+
+    if (!acc[groupKey]) {
+        acc[groupKey] = [];
+    }
+
+    acc[groupKey].push(curr);
+
+    return acc;
+}, {})
+
+const mostBlogs = (blogs) => {
+    if (blogs.length === 0) return {}
+
+    const grouped = groupedBlogs(blogs)
+    const authorsWithBlogCount = Object.keys(grouped).map(key => ({"author": key, "blogs": grouped[key].length}))
+    
+    return authorsWithBlogCount.reduce((prev, curr) => {
+        return (prev.blogs > curr.blogs) ? prev : curr
+    })
+}
+
 const totalLikes = (blogs) => {
     return blogs.reduce((acc, val) => acc + val.likes, 0)
 }
@@ -27,5 +50,6 @@ const totalLikes = (blogs) => {
 module.exports = {
     dummy,
     favoriteBlog,
+    mostBlogs,
     totalLikes
 }

@@ -104,13 +104,39 @@ describe('favoriteBlog', () => {
     })
   })
 
-  test('returns only blog, when array contains 1 blog', () => {
+  test('returns correct blog', () => {
     const result = listHelper.favoriteBlog(blogs)
   
     assert.deepStrictEqual(result, {
       title: "Canonical string reduction",
       author: "Edsger W. Dijkstra",
       likes: 12,
+    })
+  })
+})
+
+describe('mostBlogs', () => {  
+  test('returns {}, when array is empty', () => {
+    const result = listHelper.mostBlogs([])
+  
+    assert.deepStrictEqual(result, {})
+  })
+
+  test('returns first blog, when array contains 1 blog', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+  
+    assert.deepStrictEqual(result, {
+      author: 'Edsger W. Dijkstra',
+      blogs: 1
+    })
+  })
+
+  test('returns correct author and number of posts', () => {
+    const result = listHelper.mostBlogs(blogs)
+  
+    assert.deepStrictEqual(result, {
+      author: "Robert C. Martin",
+      blogs: 3
     })
   })
 })
