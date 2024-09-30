@@ -36,10 +36,27 @@ const mostBlogs = (blogs) => {
     if (blogs.length === 0) return {}
 
     const grouped = groupedBlogs(blogs)
-    const authorsWithBlogCount = Object.keys(grouped).map(key => ({"author": key, "blogs": grouped[key].length}))
+    const authorsWithBlogCount = Object.keys(grouped)
+        .map(key => ({ "author": key, "blogs": grouped[key].length })) 
     
     return authorsWithBlogCount.reduce((prev, curr) => {
         return (prev.blogs > curr.blogs) ? prev : curr
+    })
+}
+
+const mostLikes = (blogs) => {
+    if (blogs.length === 0) return {}
+
+    const grouped = groupedBlogs(blogs)
+    const authorsWithBlogCount = Object.keys(grouped)
+        .map(key => {
+            const likes = grouped[key].reduce((acc, curr) => (acc + curr.likes), 0)
+
+            return ({ "author": key, likes })
+        }) 
+    
+    return authorsWithBlogCount.reduce((prev, curr) => {
+        return (prev.likes > curr.likes) ? prev : curr
     })
 }
 
@@ -51,5 +68,6 @@ module.exports = {
     dummy,
     favoriteBlog,
     mostBlogs,
+    mostLikes,
     totalLikes
 }
