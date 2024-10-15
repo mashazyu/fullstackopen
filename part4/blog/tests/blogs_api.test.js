@@ -64,6 +64,25 @@ test('a valid blog can be added ', async () => {
   assert.strictEqual(lastSavedBlog.url, newBlog.url)
 })
 
+test('if no likes prop is provided, it will be set to 0', async () => {
+  const newBlog =  {
+    title: 'very long title',
+    author: 'the most famous author',
+    url: 'http://website22.com',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const updatedBlogs = await helper.blogsInDb()
+  const lastSavedBlog = updatedBlogs.pop()
+
+  assert.strictEqual(lastSavedBlog.likes, 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
