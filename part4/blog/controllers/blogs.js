@@ -8,6 +8,12 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
+  const { title, url } = request.body
+
+  if (!title || !url) {
+    return response.status(400).send('Bad Request')
+  }
+
   const blog = new Blog(request.body)
   const result = await blog.save()
 

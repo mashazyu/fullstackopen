@@ -83,6 +83,34 @@ test('if no likes prop is provided, it will be set to 0', async () => {
   assert.strictEqual(lastSavedBlog.likes, 0)
 })
 
+test('if title prop is missing, return 400 bad request', async () => {
+  const newBlog =  {
+    author: 'the most famous author',
+    url: 'http://website22.com',
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  assert.strictEqual(response.status, 400)
+  assert.deepStrictEqual(response.body, { error: true, message: 'Bad Request' })
+})
+
+test('if url prop is missing, return 400 bad request', async () => {
+  const newBlog =  {
+    title: 'very long title',
+    author: 'the most famous author',
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  assert.strictEqual(response.status, 400)
+  assert.deepStrictEqual(response.body, { error: true, message: 'Bad Request' })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
