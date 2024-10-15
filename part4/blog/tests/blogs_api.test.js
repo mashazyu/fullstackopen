@@ -14,14 +14,12 @@ const initialBlogs = [
     author: 'famous author',
     url: 'http://website1.com',
     likes: 2,
-    id: '66fa8dfbe75e597b07c68a29',
   },
   {
     title: 'longer title',
     author: 'very famous author',
     url: 'http://website2.com',
     likes: 22,
-    id: '66fa9246fbc8a71ff5ff5f4d',
   },
 ]
 
@@ -34,11 +32,11 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+test.only('blogs are returned as json', async () => {
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.statusCode, 200)
+  assert.match(response.type, /application\/json/)
 })
 
 test('there are two blog posts', async () => {
@@ -49,9 +47,12 @@ test('there are two blog posts', async () => {
 
 test('the first blog has correct properties', async () => {
   const response = await api.get('/api/blogs')
-  const contents = response.body.map((e) => e.content)
+  const firstBlog = response.body[0]
 
-  assert.strictEqual(contents.includes('HTML is easy'), true)
+  assert.strictEqual(firstBlog.title, initialBlogs[0].title)
+  assert.strictEqual(firstBlog.author, initialBlogs[0].author)
+  assert.strictEqual(firstBlog.likes, initialBlogs[0].likes)
+  assert.strictEqual(firstBlog.url, initialBlogs[0].url)
 })
 
 after(async () => {
