@@ -32,7 +32,7 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 })
 
-test.only('blogs are returned as json', async () => {
+test('blogs are returned as json', async () => {
   const response = await api.get('/api/blogs')
 
   assert.strictEqual(response.statusCode, 200)
