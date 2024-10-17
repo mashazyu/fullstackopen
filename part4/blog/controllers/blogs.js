@@ -7,17 +7,58 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
-  const { title, url } = request.body
+blogsRouter.get('/:id', async (request, response) => {
+  const id = request.params.id
 
-  if (!title || !url) {
-    return response.status(400).send('Bad Request')
+  if (!id) {
+    response.status(404).send({ error: 'malformatted id' })
+  } 
+
+  const blog = await Blog.findById(id)
+
+  response.json(blog)
+})
+
+blogsRouter.post('/', async (request, response) => {
+  const blog = new Blog(request.body)
+
+  try {
+    const result = await blog.save()
+
+    response.status(201).json(result)
+  } catch(error) {
+    response.status(400).json({ message: error.message });
+  }
+})
+
+blogsRouter.delete('/:id', async (request, response) => {
+  const id = request.params.id
+  const blog = await Blog.findByIdAndDelete(id)
+
+  if (!blog) {
+    return response.status(404).send('blog not found' )
   }
 
-  const blog = new Blog(request.body)
-  const result = await blog.save()
+  response.json(blog)
+})
 
-  response.status(201).json(result)
+blogsRouter.put('/:id', async (request, response) => {
+  const id = request.params.id
+  const { author, title, url, likes } = request.body
+  const newBlogObject = { author, title, url, likes }
+  const params = { new: true, runValidators: true }
+
+  try {
+    const blog = await Blog.findByIdAndUpdate(id, newBlogObject, params)
+    // if document is not found by id, result equals null
+    if (!blog) {
+      return response.status(404).send('blog not found' )
+    } 
+    
+    response.json(blog)
+  } catch(error) {
+    response.status(400).json({ message: error.message });
+  }
 })
 
 module.exports = blogsRouter

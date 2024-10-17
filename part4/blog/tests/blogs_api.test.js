@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const helper = require('./test_helper')
@@ -6,6 +6,14 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+
+function allObjectsHaveId(array) {
+  return array.every((obj) => 'id' in obj)
+}
+
+function hasObjectWithAttribute(array, attributeName, attributeValue) {
+  return array.some((obj) => obj[attributeName] === attributeValue)
+}
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -16,99 +24,173 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+describe('get(/)', () => {
+  test('all initial posts are saved in DB', async () => {
+    const response = await api.get('/api/blogs')
+  
+    assert.strictEqual(response.body.length, helper.initialBlogs.length)
+  })
+
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('all blogs have id attribute', async () => {
+    const response = await api.get('/api/blogs')
+  
+    assert.strictEqual(allObjectsHaveId(response.body), true)
+  })
+
+  test('all blogs have correct properties', async () => {
+    const response = await api.get('/api/blogs')
+    const firstBlog = helper.initialBlogs[0]
+    const assertionsArray = ['title', 'author', 'url', 'likes'].map((attr) =>
+      assert.strictEqual(hasObjectWithAttribute(response.body, attr, firstBlog[attr]), true)
+    )
+  
+    await Promise.all(assertionsArray)
+  })
 })
 
-test('there are two blog posts', async () => {
-  const response = await api.get('/api/blogs')
+describe('post(/)', () => {
+  test('a valid blog can be added ', async () => {
+    const newBlog = {
+      title: 'very long title',
+      author: 'the most famous author',
+      url: 'http://website22.com',
+      likes: 222,
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const updatedBlogs = await helper.blogsInDb()
+    assert.strictEqual(updatedBlogs.length, helper.initialBlogs.length + 1)
+  
+    const lastSavedBlog = updatedBlogs.pop()
+    assert.strictEqual(lastSavedBlog.title, newBlog.title)
+    assert.strictEqual(lastSavedBlog.author, newBlog.author)
+    assert.strictEqual(lastSavedBlog.likes, newBlog.likes)
+    assert.strictEqual(lastSavedBlog.url, newBlog.url)
+  })
 
-  assert.strictEqual(response.body.length, helper.initialBlogs.length)
+  test('if no likes prop is provided, it will be set to 0', async () => {
+    const newBlog = {
+      title: 'very long title',
+      author: 'the most famous author',
+      url: 'http://website22.com',
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const updatedBlogs = await helper.blogsInDb()
+    const lastSavedBlog = updatedBlogs.pop()
+  
+    assert.strictEqual(lastSavedBlog.likes, 0)
+  })
+
+  test('if title prop is missing, return 400 bad request', async () => {
+    const newBlog = {
+      author: 'the most famous author',
+      url: 'http://website22.com',
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+  
+    assert.strictEqual(response.status, 400)
+    assert(response.text, /validation failed/)
+  })
+  
+  test('if url prop is missing, return 400 bad request', async () => {
+    const newBlog = {
+      title: 'very long title',
+      author: 'the most famous author',
+    }
+  
+    const response = await api.post('/api/blogs').send(newBlog)
+  
+    assert.strictEqual(response.status, 400)
+    assert(response.text, /validation failed/)
+  })
 })
 
-test('the first blog has correct properties', async () => {
-  const response = await api.get('/api/blogs')
-  const firstBlog = response.body[0]
+describe('put(/:id)', () => {
+  test('updates blog attributes', async () => {
+    const blog = {
+      title: 'updated title',
+      author: 'updated author',
+      url: 'http://updatedwebsite.com',
+      likes: 33
+    }
+    const blogs = await helper.blogsInDb()
+  
+    const response  = await api
+      .put(`/api/blogs/${blogs[0].id}`)
+      .send(blog)
 
-  assert.strictEqual(firstBlog.title, helper.initialBlogs[0].title)
-  assert.strictEqual(firstBlog.author, helper.initialBlogs[0].author)
-  assert.strictEqual(firstBlog.likes, helper.initialBlogs[0].likes)
-  assert.strictEqual(firstBlog.url, helper.initialBlogs[0].url)
-  assert.strictEqual(Object.keys(firstBlog).includes('id'), true)
+    assert.strictEqual(response.status, 200)
+    assert.strictEqual(response.text.includes(blog.title), true)
+    assert.strictEqual(response.text.includes(blog.author), true)
+    assert.strictEqual(response.text.includes(blog.url), true)
+    assert.strictEqual(response.text.includes(blog.likes), true)
+  })
+
+  test('returns error, if no id provided', async () => {
+    const response  = await api
+      .put(`/api/blogs/`)
+      .send({})
+
+    assert.strictEqual(response.status, 404)
+  })
+
+  test('returns error, if no id valid provided', async () => {
+    const response  = await api
+      .put(`/api/blogs/67112821ce34933798533303`)
+      .send({})
+
+    assert.strictEqual(response.status, 404)
+    assert.strictEqual(response.text, 'blog not found')
+  })
 })
 
-test('a valid blog can be added ', async () => {
-  const newBlog =  {
-    title: 'very long title',
-    author: 'the most famous author',
-    url: 'http://website22.com',
-    likes: 222,
-  }
+describe('delete(/:id)', () => {
+  test('deletes blog', async () => {
+    const blogs = await helper.blogsInDb()
+    const initialAmountOfBlogs = blogs.length
+  
+    const response  = await api.delete(`/api/blogs/${blogs[0].id}`)
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    assert.strictEqual(response.status, 200)
+    assert.strictEqual((await helper.blogsInDb()).length, initialAmountOfBlogs - 1)
+  })
 
-  const updatedBlogs = await helper.blogsInDb()
-  assert.strictEqual(updatedBlogs.length, helper.initialBlogs.length + 1)
+  test('returns deleted blog', async () => {
+    const blogs = await helper.blogsInDb()
+    const { id, title, author, url, likes} = blogs[0]
+  
+    const response  = await api.delete(`/api/blogs/${id}`)
 
-  const lastSavedBlog = updatedBlogs.pop()
-  assert.strictEqual(lastSavedBlog.title, newBlog.title)
-  assert.strictEqual(lastSavedBlog.author, newBlog.author)
-  assert.strictEqual(lastSavedBlog.likes, newBlog.likes)
-  assert.strictEqual(lastSavedBlog.url, newBlog.url)
-})
+    assert.strictEqual(response.text.includes(title), true)
+    assert.strictEqual(response.text.includes(author), true)
+    assert.strictEqual(response.text.includes(url), true)
+    assert.strictEqual(response.text.includes(likes), true)
+  })
 
-test('if no likes prop is provided, it will be set to 0', async () => {
-  const newBlog =  {
-    title: 'very long title',
-    author: 'the most famous author',
-    url: 'http://website22.com',
-  }
+  test('returns error, if no id valid provided', async () => {
+    const response  = await api.delete(`/api/blogs/67112821ce34933798533303`)
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const updatedBlogs = await helper.blogsInDb()
-  const lastSavedBlog = updatedBlogs.pop()
-
-  assert.strictEqual(lastSavedBlog.likes, 0)
-})
-
-test('if title prop is missing, return 400 bad request', async () => {
-  const newBlog =  {
-    author: 'the most famous author',
-    url: 'http://website22.com',
-  }
-
-  const response = await api
-    .post('/api/blogs')
-    .send(newBlog)
-
-  assert.strictEqual(response.status, 400)
-  assert.deepStrictEqual(response.body, { error: true, message: 'Bad Request' })
-})
-
-test('if url prop is missing, return 400 bad request', async () => {
-  const newBlog =  {
-    title: 'very long title',
-    author: 'the most famous author',
-  }
-
-  const response = await api
-    .post('/api/blogs')
-    .send(newBlog)
-
-  assert.strictEqual(response.status, 400)
-  assert.deepStrictEqual(response.body, { error: true, message: 'Bad Request' })
+    assert.strictEqual(response.status, 404)
+    assert.strictEqual(response.text, 'blog not found')
+  })
 })
 
 after(async () => {
