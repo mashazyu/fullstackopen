@@ -146,7 +146,7 @@ describe('put(/:id)', () => {
 
   test('returns error, if no id provided', async () => {
     const response  = await api
-      .put(`/api/blogs/`)
+      .put('/api/blogs/')
       .send({})
 
     assert.strictEqual(response.status, 404)
@@ -154,7 +154,7 @@ describe('put(/:id)', () => {
 
   test('returns error, if no id valid provided', async () => {
     const response  = await api
-      .put(`/api/blogs/67112821ce34933798533303`)
+      .put('/api/blogs/67112821ce34933798533303')
       .send({})
 
     assert.strictEqual(response.status, 404)
@@ -186,7 +186,7 @@ describe('delete(/:id)', () => {
   })
 
   test('returns error, if no id valid provided', async () => {
-    const response  = await api.delete(`/api/blogs/67112821ce34933798533303`)
+    const response  = await api.delete('/api/blogs/67112821ce34933798533303')
 
     assert.strictEqual(response.status, 404)
     assert.strictEqual(response.text, 'blog not found')

@@ -27,7 +27,7 @@ blogsRouter.post('/', async (request, response) => {
 
     response.status(201).json(result)
   } catch(error) {
-    response.status(400).json({ message: error.message });
+    response.status(400).json({ message: error.message })
   }
 })
 
@@ -57,7 +57,7 @@ blogsRouter.put('/:id', async (request, response) => {
     
     response.json(blog)
   } catch(error) {
-    response.status(400).json({ message: error.message });
+    response.status(400).json({ message: error.message })
   }
 })
 
