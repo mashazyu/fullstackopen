@@ -1,7 +1,19 @@
+const jwt = require('jsonwebtoken')
+
 const blogsRouter = require('express').Router()
 
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+const getTokenFrom = (request) => {
+    const authorization = request.get('authorization')
+
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')
+    }
+
+    return null
+}
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -22,8 +34,12 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-    const user = await User.findById(request.body.userId)
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
 
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
     const blog = new Blog({
         ...request.body,
         user: user.id,
@@ -38,33 +54,33 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  const id = request.params.id
-  const blog = await Blog.findByIdAndDelete(id)
+    const id = request.params.id
+    const blog = await Blog.findByIdAndDelete(id)
 
-  if (!blog) {
-    return response.status(404).send('blog not found' )
-  }
+    if (!blog) {
+        return response.status(404).send('blog not found')
+    }
 
-  response.json(blog)
+    response.json(blog)
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const id = request.params.id
-  const { author, title, url, likes } = request.body
-  const newBlogObject = { author, title, url, likes }
-  const params = { new: true, runValidators: true }
+    const id = request.params.id
+    const { author, title, url, likes } = request.body
+    const newBlogObject = { author, title, url, likes }
+    const params = { new: true, runValidators: true }
 
-  try {
-    const blog = await Blog.findByIdAndUpdate(id, newBlogObject, params)
-    // if document is not found by id, result equals null
-    if (!blog) {
-      return response.status(404).send('blog not found' )
-    } 
-    
-    response.json(blog)
-  } catch(error) {
-    response.status(400).json({ message: error.message })
-  }
+    try {
+        const blog = await Blog.findByIdAndUpdate(id, newBlogObject, params)
+        // if document is not found by id, result equals null
+        if (!blog) {
+            return response.status(404).send('blog not found')
+        }
+
+        response.json(blog)
+    } catch (error) {
+        response.status(400).json({ message: error.message })
+    }
 })
 
 module.exports = blogsRouter
