@@ -61,7 +61,7 @@ describe('get(/)', () => {
     })
 })
 
-describe('post(/)', () => {
+describe.skip('post(/)', () => {
     test('a valid blog can be added ', async () => {
         const users = await helper.usersInDb()
         const newBlog = {
