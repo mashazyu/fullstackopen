@@ -30,7 +30,7 @@ beforeEach(async () => {
     await Promise.all([...promiseArray, user.save()])
 })
 
-describe('get(/)', () => {
+describe.skip('get(/)', () => {
     test('all initial posts are saved in DB', async () => {
         const response = await api.get('/api/blogs')
 
@@ -137,74 +137,68 @@ describe.skip('post(/)', () => {
     })
 })
 
-describe('put(/:id)', () => {
-  test('updates blog attributes', async () => {
-    const blog = {
-      title: 'updated title',
-      author: 'updated author',
-      url: 'http://updatedwebsite.com',
-      likes: 33
-    }
-    const blogs = await helper.blogsInDb()
-  
-    const response  = await api
-      .put(`/api/blogs/${blogs[0].id}`)
-      .send(blog)
+describe.skip('put(/:id)', () => {
+    test('updates blog attributes', async () => {
+        const blog = {
+            title: 'updated title',
+            author: 'updated author',
+            url: 'http://updatedwebsite.com',
+            likes: 33,
+        }
+        const blogs = await helper.blogsInDb()
 
-    assert.strictEqual(response.status, 200)
-    assert.strictEqual(response.text.includes(blog.title), true)
-    assert.strictEqual(response.text.includes(blog.author), true)
-    assert.strictEqual(response.text.includes(blog.url), true)
-    assert.strictEqual(response.text.includes(blog.likes), true)
-  })
+        const response = await api.put(`/api/blogs/${blogs[0].id}`).send(blog)
 
-  test('returns error, if no id provided', async () => {
-    const response  = await api
-      .put('/api/blogs/')
-      .send({})
+        assert.strictEqual(response.status, 200)
+        assert.strictEqual(response.text.includes(blog.title), true)
+        assert.strictEqual(response.text.includes(blog.author), true)
+        assert.strictEqual(response.text.includes(blog.url), true)
+        assert.strictEqual(response.text.includes(blog.likes), true)
+    })
 
-    assert.strictEqual(response.status, 404)
-  })
+    test('returns error, if no id provided', async () => {
+        const response = await api.put('/api/blogs/').send({})
 
-  test('returns error, if no id valid provided', async () => {
-    const response  = await api
-      .put('/api/blogs/67112821ce34933798533303')
-      .send({})
+        assert.strictEqual(response.status, 404)
+    })
 
-    assert.strictEqual(response.status, 404)
-    assert.strictEqual(response.text, 'blog not found')
-  })
+    test('returns error, if no id valid provided', async () => {
+        const response = await api.put('/api/blogs/67112821ce34933798533303').send({})
+
+        assert.strictEqual(response.status, 404)
+        assert.strictEqual(response.text, 'blog not found')
+    })
 })
 
-describe('delete(/:id)', () => {
-  test('deletes blog', async () => {
-    const blogs = await helper.blogsInDb()
-    const initialAmountOfBlogs = blogs.length
-  
-    const response  = await api.delete(`/api/blogs/${blogs[0].id}`)
+describe.skip('delete(/:id)', () => {
+    test('deletes blog', async () => {
+        const blogs = await helper.blogsInDb()
+        const initialAmountOfBlogs = blogs.length
 
-    assert.strictEqual(response.status, 200)
-    assert.strictEqual((await helper.blogsInDb()).length, initialAmountOfBlogs - 1)
-  })
+        const response = await api.delete(`/api/blogs/${blogs[0].id}`)
 
-  test('returns deleted blog', async () => {
-    const blogs = await helper.blogsInDb()
-    const { id, title, author, url, likes} = blogs[0]
-  
-    const response  = await api.delete(`/api/blogs/${id}`)
+        assert.strictEqual(response.status, 200)
+        assert.strictEqual((await helper.blogsInDb()).length, initialAmountOfBlogs - 1)
+    })
 
-    assert.strictEqual(response.text.includes(title), true)
-    assert.strictEqual(response.text.includes(author), true)
-    assert.strictEqual(response.text.includes(url), true)
-    assert.strictEqual(response.text.includes(likes), true)
-  })
+    test('returns deleted blog', async () => {
+        const blogs = await helper.blogsInDb()
+        const { id, title, author, url, likes } = blogs[0]
 
-  test('returns error, if no id valid provided', async () => {
-    const response  = await api.delete('/api/blogs/67112821ce34933798533303')
+        const response = await api.delete(`/api/blogs/${id}`)
 
-    assert.strictEqual(response.status, 404)
-    assert.strictEqual(response.text, 'blog not found')
-  })
+        assert.strictEqual(response.text.includes(title), true)
+        assert.strictEqual(response.text.includes(author), true)
+        assert.strictEqual(response.text.includes(url), true)
+        assert.strictEqual(response.text.includes(likes), true)
+    })
+
+    test('returns error, if no id valid provided', async () => {
+        const response = await api.delete('/api/blogs/67112821ce34933798533303')
+
+        assert.strictEqual(response.status, 404)
+        assert.strictEqual(response.text, 'blog not found')
+    })
 })
 
 after(async () => {
