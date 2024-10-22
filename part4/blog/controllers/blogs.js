@@ -40,13 +40,19 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
     const id = request.params.id
-    const blog = await Blog.findByIdAndDelete(id)
+    const blog = await Blog.findById(id)
 
     if (!blog) {
         return response.status(404).send('blog not found')
     }
 
-    response.json(blog)
+    if (request.user.toString() !== blog.user.toString()) {
+        return response.status(401).send('user is not authorized to delete blog')
+    }
+
+    const deletedBlog = await Blog.findByIdAndDelete(id)
+
+    response.json(deletedBlog)
 })
 
 blogsRouter.put('/:id', async (request, response) => {
