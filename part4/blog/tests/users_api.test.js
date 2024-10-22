@@ -61,6 +61,15 @@ describe('when there is initially one user in db', () => {
         assert(result.body.error.includes('expected `username` to be unique'))    
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
+
+    test('get request returns 1 user and correct status code and content type', async () => {
+      const result = await api
+        .get('/api/users')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      assert.strictEqual(result.body.length, 1)
+    })
   })
 
     after(async () => {
