@@ -23,7 +23,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
             updatedBlogs.push(newBlog)
             setBlogs(updatedBlogs)
 
-            const message = `blog ${title} by ${author} was added`
+            const message = `blog ${newBlog.title} by ${newBlog.author} was added`
             setMessage(message)
             setTimeout(() => {
                 setMessage(null)
@@ -42,6 +42,30 @@ const BlogList = ({ user, setUser, setMessage }) => {
         blogService.setToken(null)
     }
 
+    const updateBlog = async (blog) => {
+        try {
+            const newBlog = await blogService.update(blog)
+            const updatedBlogs = [...blogs]
+            updatedBlogs.forEach(blog => {
+                if (blog.id === newBlog.id) {
+                    blog.likes = newBlog.likes
+                }
+            })
+            setBlogs(updatedBlogs)
+
+            const message = `blog ${newBlog.title} by ${newBlog.author} was updated`
+            setMessage(message)
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        } catch (exception) {
+            setMessage('Could not update blog')
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        }
+    }
+
     return (
         <>
             <h2>blogs</h2>
@@ -54,7 +78,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
             </Togglable>
             
             {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />
+                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
             )}
         </>
     )

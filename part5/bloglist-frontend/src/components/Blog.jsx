@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [fullDetails, setFullDetails] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -11,6 +11,12 @@ const Blog = ({ blog }) => {
   }
   const buttonLabel = fullDetails ? "hide" : "view"
   const handleDetailsVisibility = () => setFullDetails(!fullDetails)
+  const handleLike = () => {
+    updateBlog({
+      ...blog,
+      likes: Number(blog.likes) + 1
+    })
+  }
 
   return (
     <div style={blogStyle}>
@@ -19,7 +25,7 @@ const Blog = ({ blog }) => {
         {fullDetails && (
           <div> 
             {blog.url}
-            <div>likes {blog.likes} <button>like</button></div>
+            <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
             {blog.user?.username}
           </div>
         )}

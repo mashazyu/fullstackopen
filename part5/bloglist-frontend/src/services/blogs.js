@@ -24,4 +24,13 @@ const create = (blog) => {
   return request.then(response => response.data)
 }
 
-export default { create, getAll, setToken }
+const update = (blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/${blog.id}`, blog, config)
+  
+  return request.then(response => response.data)
+}
+
+export default { create, getAll, setToken, update }
