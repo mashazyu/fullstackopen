@@ -2,33 +2,43 @@ import { useState, useEffect } from 'react'
 import Blog from './Blog'
 import blogService from '../services/blogs'
 
-const BlogList = ({user}) => {
+const BlogList = ({ user, setUser, setMessage }) => {
     const [blogs, setBlogs] = useState([])
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
     useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs( blogs )
-        )  
-
+        async function fetchData() {
+            const blogs = await blogService.getAll()
+            setBlogs(blogs)
+        }
+        fetchData(); 
     }, [])
 
     const handleCreateBlog = async (event) => {
         event.preventDefault()
 
-        blogService
-            .create({ title, author, url })
-            .then(blog => {
-                const updatedBlogs = [...blogs]
-                updatedBlogs.push(blog)
+        try {
+            const blog = await blogService.create({ title, author, url })
+            const updatedBlogs = [...blogs]
+            updatedBlogs.push(blog)
 
-                setBlogs(updatedBlogs)
-                setAuthor('')
-                setTitle('')
-                setUrl('')
-            })
+            const message = `blog ${title} by ${author} was added`
+            setMessage(message)
+            setBlogs(updatedBlogs)
+            setAuthor('')
+            setTitle('')
+            setUrl('')
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        } catch (exception) {
+            setMessage('Could not create blog')
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        }
     }
 
     const handleLogOut = () => {

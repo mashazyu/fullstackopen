@@ -5,7 +5,7 @@ import BlogList from './components/BlogList'
 import blogService from './services/blogs'
 
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [user, setUser] = useState(null) 
 
   useEffect(() => {
@@ -20,10 +20,11 @@ const App = () => {
 
   return (
     <div>
+      {message && <p>{message}</p>}
       {user === null ?
-        <LoginForm setUser={setUser} setErrorMessage={setErrorMessage}/> :
+        <LoginForm setUser={setUser} setMessage={setMessage}/> :
         <>
-          <BlogList user={user} />
+          <BlogList user={user} setUser={setUser} setMessage={setMessage} />
         </>
       }
     </div>
