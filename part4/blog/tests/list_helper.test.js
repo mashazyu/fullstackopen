@@ -65,26 +65,32 @@ const blogs = [
   }  
 ]
 
-describe('dummy', () => {  
-  test('dummy returns one', () => {
-    const result = listHelper.dummy([])
-  
-    assert.strictEqual(result, 1)
-  })
+describe('dummy', () => {
+    test('dummy returns one', () => {
+        const result = listHelper.dummy([])
+
+        assert.strictEqual(result, 1)
+    })
 })
 
-describe('totalLikes', () => {  
-  test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
+describe('totalLikes', () => {
+    test('when list is empty, equals 0', () => {
+        const result = listHelper.totalLikes(listWithOneBlog)
 
-    assert.strictEqual(result, 5)
-  })
+        assert.strictEqual(result, 5)
+    })
 
-  test('when list has many blogs, equals sum of likes', () => {
-    const result = listHelper.totalLikes(blogs)
+    test('when list has only one blog, equals the likes of that', () => {
+        const result = listHelper.totalLikes(listWithOneBlog)
 
-    assert.strictEqual(result, 36)
-  })
+        assert.strictEqual(result, 5)
+    })
+
+    test('when list has many blogs, equals sum of likes', () => {
+        const result = listHelper.totalLikes(blogs)
+
+        assert.strictEqual(result, 36)
+    })
 })
 
 describe('favoriteBlog', () => {  
