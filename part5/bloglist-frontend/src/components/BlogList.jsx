@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Blog from './Blog'
+import Togglable from './Togglable'
 import blogService from '../services/blogs'
 
 const BlogList = ({ user, setUser, setMessage }) => {
@@ -7,6 +8,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
+    const blogFormRef = useRef()
 
     useEffect(() => {
         async function fetchData() {
@@ -88,8 +90,9 @@ const BlogList = ({ user, setUser, setMessage }) => {
                 <>{user.username} logged in</>
                 <button onClick={handleLogOut}>log out</button>
             </>
-
-            {createBlogForm()}
+            <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                {createBlogForm()}
+            </Togglable>
             
             {blogs.map(blog =>
                 <Blog key={blog.id} blog={blog} />
