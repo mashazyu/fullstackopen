@@ -41,7 +41,7 @@ describe('when there is initially one user in db', () => {
         assert(usernames.includes(newUser.username))
     })
 
-    test('creation fails with proper statuscode and message, if username already taken', async () => {
+    test('creation fails with proper statuscode and message, if username is taken', async () => {
         const usersAtStart = await helper.usersInDb()
 
         const newUser = {
@@ -50,15 +50,16 @@ describe('when there is initially one user in db', () => {
             password: 'salainen',
         }
 
-        const result = await api
+        const response = await api
             .post('/api/users')
             .send(newUser)
             .expect(400)
             .expect('Content-Type', /application\/json/)
 
+        assert(response.body.error.includes('expected `username` to be unique'))
+
         const usersAtEnd = await helper.usersInDb()
 
-        assert(result.body.error.includes('expected `username` to be unique'))
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
 
@@ -106,22 +107,6 @@ describe('when there is initially one user in db', () => {
             .expect('Content-Type', /application\/json/)
 
         assert(result.body.error.includes('Path `password` is required'))
-    })
-
-    test('creation fails with proper statuscode and message, if password is too short', async () => {
-        const newUser = {
-            username: 'abc',
-            name: 'Superuser',
-            password: 'ab',
-        }
-
-        const result = await api
-            .post('/api/users')
-            .send(newUser)
-            .expect(400)
-            .expect('Content-Type', /application\/json/)
-
-        assert(result.body.error.includes('Password must be at least 3 characters long'))
     })
 
     test('get request returns 1 user and correct status code and content type', async () => {

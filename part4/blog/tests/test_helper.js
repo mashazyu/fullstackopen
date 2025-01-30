@@ -46,9 +46,19 @@ const usersInDb = async () => {
   return users.map(u => u.toJSON())
 }
 
+function allObjectsHaveId(array) {
+    return array.every((obj) => 'id' in obj)
+}
+
+function hasObjectWithAttribute(array, attributeName, attributeValue) {
+    return array.some((obj) => obj[attributeName] === attributeValue)
+}
+
 module.exports = {
-  initialBlogs, 
-  nonExistingId, 
-  blogsInDb,
-  usersInDb
+    allObjectsHaveId,
+    blogsInDb,
+    hasObjectWithAttribute,
+    initialBlogs,
+    nonExistingId,
+    usersInDb,
 }

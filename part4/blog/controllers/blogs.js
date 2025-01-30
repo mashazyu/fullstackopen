@@ -20,19 +20,22 @@ blogsRouter.get('/:id', async (request, response) => {
 
     const blog = await Blog.findById(id)
 
-    response.json(blog)
+    if (blog) {
+        response.json(blog)
+    } else {
+        response.status(404).end()
+    }
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response, next) => {
     const user = await User.findById(request.user)
     const blog = new Blog({
         ...request.body,
         user: user.id,
     })
-
     const newBlog = await blog.save()
-
-    user.blogs = user.blogs.concat(newBlog.id)
+    // update list of blogs assigned to the user
+    user.blogs = user.blogs.concat(newBlog._id)
     await user.save()
 
     response.status(201).json(newBlog)
@@ -57,21 +60,22 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
     const id = request.params.id
+    const blog = await Blog.findById(id)
+
+    if (!blog) {
+        return response.status(404).send('blog not found')
+    }
+
+    if (request.user.toString() !== blog.user.toString()) {
+        return response.status(401).send('user is not authorized to delete blog')
+    }
+
     const { author, title, url, likes } = request.body
     const newBlogObject = { author, title, url, likes }
     const params = { new: true, runValidators: true }
+    const updatedBlog = await Blog.findByIdAndUpdate(id, newBlogObject, params)
 
-    try {
-        const blog = await Blog.findByIdAndUpdate(id, newBlogObject, params)
-        // if document is not found by id, result equals null
-        if (!blog) {
-            return response.status(404).send('blog not found')
-        }
-
-        response.json(blog)
-    } catch (error) {
-        response.status(400).json({ message: error.message })
-    }
+    response.json(updatedBlog)
 })
 
 module.exports = blogsRouter
