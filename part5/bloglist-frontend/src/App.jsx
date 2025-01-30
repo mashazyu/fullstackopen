@@ -18,19 +18,12 @@ const App = () => {
     }
   }, [])
 
-  const handleLogOut = () => {
-    window.localStorage.removeItem('user')
-    setUser(null)
-    blogService.setToken(null)
-  }
-
   return (
     <div>
       {user === null ?
         <LoginForm setUser={setUser} setErrorMessage={setErrorMessage}/> :
         <>
           <BlogList user={user} />
-          <button onClick={handleLogOut}>log out</button>
         </>
       }
     </div>

@@ -31,6 +31,12 @@ const BlogList = ({user}) => {
             })
     }
 
+    const handleLogOut = () => {
+        window.localStorage.removeItem('user')
+        setUser(null)
+        blogService.setToken(null)
+    }
+
     const createBlogForm = () => (
         <form onSubmit={handleCreateBlog}>
             <h2>login to application</h2>
@@ -68,7 +74,10 @@ const BlogList = ({user}) => {
     return (
         <>
             <h2>blogs</h2>
-            <p>{user.username} logged in</p>
+            <>
+                <>{user.username} logged in</>
+                <button onClick={handleLogOut}>log out</button>
+            </>
 
             {createBlogForm()}
             
