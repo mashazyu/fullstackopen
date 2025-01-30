@@ -163,26 +163,26 @@ describe('after successful login', () => {
             assert.strictEqual((await helper.blogsInDb()).length, initialAmountOfBlogs - 1)
         })
 
-        // test('returns deleted blog', async () => {
-        //     const blogs = await helper.blogsInDb()
-        //     const { id, title, author, url, likes } = blogs[0]
+        test('returns deleted blog', async () => {
+            const blogs = await helper.blogsInDb()
+            const { id, title, author, url, likes } = blogs[0]
 
-        //     const response = await api.delete(`/api/blogs/${id}`).set('Authorization', `Bearer ${token}`)
+            const response = await api.delete(`/api/blogs/${id}`).set('Authorization', `Bearer ${token}`)
 
-        //     assert.strictEqual(response.text.includes(title), true)
-        //     assert.strictEqual(response.text.includes(author), true)
-        //     assert.strictEqual(response.text.includes(url), true)
-        //     assert.strictEqual(response.text.includes(likes), true)
-        // })
+            assert.strictEqual(response.text.includes(title), true)
+            assert.strictEqual(response.text.includes(author), true)
+            assert.strictEqual(response.text.includes(url), true)
+            assert.strictEqual(response.text.includes(likes), true)
+        })
 
-        // test('returns error, if no id valid provided', async () => {
-        //     const response = await api
-        //         .delete('/api/blogs/67112821ce34933798533303')
-        //         .set('Authorization', `Bearer ${token}`)
+        test('returns error, if no id valid provided', async () => {
+            const response = await api
+                .delete('/api/blogs/67112821ce34933798533303')
+                .set('Authorization', `Bearer ${token}`)
 
-        //     assert.strictEqual(response.status, 404)
-        //     assert.strictEqual(response.text, 'blog not found')
-        // })
+            assert.strictEqual(response.status, 404)
+            assert.strictEqual(response.text, 'blog not found')
+        })
     })
 
     describe('put(/:id)', () => {
