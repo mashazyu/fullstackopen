@@ -67,6 +67,26 @@ const BlogList = ({ user, setUser, setMessage }) => {
         }
     }
 
+    const removeBlog = async (blog) => {
+        try {
+            const removedBlog = await blogService.remove(blog)
+            const updatedBlogs = [...blogs].filter(({ id }) => (id != removedBlog.id))
+            
+            setBlogs(updatedBlogs)
+
+            const message = `blog ${blog.title} by ${blog.author} was removed`
+            setMessage(message)
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        } catch (exception) {
+            setMessage('Could not remove blog')
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        }
+    }
+
     const handleSort = () => setIsSorted(!isSorted)
     const blogsToDisplay = isSorted ? [...blogs].sort((a, b) => (Number(b.likes) - Number(a.likes))) : blogs
 
@@ -82,7 +102,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
             </Togglable>
             <button onClick={handleSort}>{isSorted ? "unsort" : "sort"}</button>
             {blogsToDisplay.map(blog =>
-                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} removeBlog={removeBlog} user={user} />
             )}
         </>
     )
