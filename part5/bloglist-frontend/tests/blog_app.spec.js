@@ -61,5 +61,22 @@ test.describe('Blog app', () => {
 
       await expect(page.getByText('new title jack sparrow')).not.toBeVisible()
     })
+
+    test('only the user who added the blog sees the blogs delete button', async ({ page, request }) => {
+      await createBlog(page, 'new title', 'jack sparrow', 'https://www.ent.non')
+
+      await request.post('/api/users', {
+        data: {
+          name: 'New User',
+          username: 'newuser',
+          password: 'unknownunicorn'
+        }
+      })
+      await page.getByRole('button', { name: /log out/i }).click()
+      await loginWith(page, 'newuser', 'unknownunicorn')
+
+      await page.getByRole('button', { name: /view/i }).click()
+      await expect(page.getByRole('button', { name: /remove/i })).not.toBeVisible()
+    })
   })
 })
