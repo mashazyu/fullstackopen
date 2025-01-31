@@ -6,6 +6,7 @@ import blogService from '../services/blogs'
 
 const BlogList = ({ user, setUser, setMessage }) => {
     const [blogs, setBlogs] = useState([])
+    const [isSorted, setIsSorted] = useState(false)
     const blogFormRef = useRef()
 
     useEffect(() => {
@@ -66,6 +67,9 @@ const BlogList = ({ user, setUser, setMessage }) => {
         }
     }
 
+    const handleSort = () => setIsSorted(!isSorted)
+    const blogsToDisplay = isSorted ? [...blogs].sort((a, b) => (Number(b.likes) - Number(a.likes))) : blogs
+
     return (
         <>
             <h2>blogs</h2>
@@ -76,8 +80,8 @@ const BlogList = ({ user, setUser, setMessage }) => {
             <Togglable buttonLabel='new blog' ref={blogFormRef}>
                 <BlogForm blogs={blogs} setBlogs={setBlogs} createBlog={createBlog} />
             </Togglable>
-            
-            {blogs.map(blog =>
+            <button onClick={handleSort}>{isSorted ? "unsort" : "sort"}</button>
+            {blogsToDisplay.map(blog =>
                 <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
             )}
         </>
