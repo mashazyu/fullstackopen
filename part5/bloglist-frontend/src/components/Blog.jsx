@@ -31,8 +31,8 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
         <div>{blog.title} {blog.author} <button onClick={handleDetailsVisibility}>{buttonLabel}</button></div>
         {fullDetails && (
           <div>
-            {blog.url}
-            <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
+            <span data-testid="url">{blog.url}</span>
+            <div data-testid="likes">likes {blog.likes} <button onClick={handleLike}>like</button></div>
             {blog.user?.username}
             {currentUserIsAuthor && (<div><button onClick={handleRemove}>remove</button></div>)}
           </div>
