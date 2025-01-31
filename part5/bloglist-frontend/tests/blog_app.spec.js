@@ -3,7 +3,7 @@ import { loginWith } from './helper'
 
 test.describe('Blog app', () => {
   test.beforeEach(async ({ page, request }) => {
-    await request.post('/api/tests/reset')
+    await request.post('/api/testing/reset')
     await request.post('/api/users', {
       data: {
         name: 'Matti Luukkainen',
@@ -31,6 +31,22 @@ test.describe('Blog app', () => {
     test('fails with wrong credentials', async ({ page }) => {
       await loginWith(page, 'mluukkai', 'tralala')
       await expect(page.getByText('Wrong credentials')).toBeVisible()
+    })
+  })
+
+  test.describe('When logged in', () => {
+    test.beforeEach(async ({ page }) => {
+      await loginWith(page, 'mluukkai', 'salainen')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: /new blog/i }).click()
+      await page.getByTestId('title').fill('short title')
+      await page.getByTestId('author').fill('john doe')
+      await page.getByTestId('url').fill('https://www.nonexist.ent')
+      await page.getByRole('button', { name: /reate blog/i }).click()
+
+      await expect(page.getByText('short title john doe')).toBeVisible()
     })
   })
 })
