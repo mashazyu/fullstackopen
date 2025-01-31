@@ -89,7 +89,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
   }
 
   const handleSort = () => setIsSorted(!isSorted)
-  const blogsToDisplay = isSorted ? [...blogs].sort((a, b) => (Number(b.likes) - Number(a.likes))) : blogs
+  const blogsToDisplay = isSorted ? [...blogs].sort((a, b) => (Number(b.likes ? b.likes : 0) - Number(a.likes ? a.likes : 0))) : blogs
 
   return (
     <>

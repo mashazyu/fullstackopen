@@ -78,5 +78,21 @@ test.describe('Blog app', () => {
       await page.getByRole('button', { name: /view/i }).click()
       await expect(page.getByRole('button', { name: /remove/i })).not.toBeVisible()
     })
+
+    test('blogs sorted correctly', async ({ page }) => {
+      // create 2 blog posts
+      await createBlog(page, 'new title', 'jack sparrow', 'https://www.ent.non')
+      await page.getByText(/new title jack sparrow/i).waitFor()
+      await createBlog(page, 'another title', 'jane doe', 'https://www.abc.onn')
+      await page.getByText(/another title jane doe/i).waitFor()
+      // like the last blog
+      await page.getByRole('button', { name: /view/i }).nth(1).click()
+      await page.getByRole('button', { name: /like/i }).click()
+      await page.getByText(/likes 1/i).waitFor()
+      // sort blogs
+      await page.getByRole('button', { name: /sort/i }).click()
+      // second blog should be on top now
+      await expect(page.getByTestId('blog-heading').nth(0)).toContainText('another title jane doe')
+    })
   })
 })

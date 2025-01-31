@@ -28,7 +28,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
   return (
     <div style={blogStyle}>
       <div>
-        <div>{blog.title} {blog.author} <button onClick={handleDetailsVisibility}>{buttonLabel}</button></div>
+        <div><span data-testid="blog-heading">{blog.title} {blog.author}</span> <button onClick={handleDetailsVisibility}>{buttonLabel}</button></div>
         {fullDetails && (
           <div>
             <span data-testid="url">{blog.url}</span>
