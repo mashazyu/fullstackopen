@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { loginWith } from './helper'
+import { createBlog, loginWith } from './helper'
 
 test.describe('Blog app', () => {
   test.beforeEach(async ({ page, request }) => {
@@ -40,13 +40,17 @@ test.describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: /new blog/i }).click()
-      await page.getByTestId('title').fill('short title')
-      await page.getByTestId('author').fill('john doe')
-      await page.getByTestId('url').fill('https://www.nonexist.ent')
-      await page.getByRole('button', { name: /reate blog/i }).click()
+      await createBlog(page, 'short title', 'john doe', 'https://www.nonexist.ent')
 
       await expect(page.getByText('short title john doe')).toBeVisible()
+    })
+
+    test('blog can be liked', async ({ page }) => {
+      await createBlog(page, 'new title', 'jack sparrow', 'https://www.ent.non')
+      await page.getByRole('button', { name: /view/i }).click()
+      await page.getByRole('button', { name: /like/i }).click()
+
+      await expect(page.getByText(/likes 1/)).toBeVisible()
     })
   })
 })
