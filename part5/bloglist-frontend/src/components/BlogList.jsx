@@ -20,6 +20,7 @@ const BlogList = ({ user, setUser, setMessage }) => {
     const createBlog = async (blog) => {
         try {
             const newBlog = await blogService.create(blog)
+
             const updatedBlogs = [...blogs]
             updatedBlogs.push(newBlog)
             setBlogs(updatedBlogs)
