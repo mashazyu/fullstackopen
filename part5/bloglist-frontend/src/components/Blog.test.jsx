@@ -17,12 +17,14 @@ const user = {
   username: 'currentuser',
   token: 'token'
 }
+const updateBlog = vi.fn()
+const removeBlog = vi.fn()
 
 describe('<Togglable />', () => {
   let container
 
   beforeEach(() => {
-    container = render(< Blog blog={blog} user={user}/>)
+    container = render(< Blog blog={blog} user={user} updateBlog={updateBlog} removeBlog={removeBlog} />)
   })
 
   test('renders title and author by default', () => {
@@ -44,5 +46,16 @@ describe('<Togglable />', () => {
 
     container.getByTestId('likes')
     container.getByTestId('url')
+  })
+
+  test('if the like button is clicked twice, the event handler is called twice', async () => {
+    const user = userEvent.setup()
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(updateBlog.mock.calls).toHaveLength(2)
   })
 })
