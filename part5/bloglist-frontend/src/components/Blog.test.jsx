@@ -20,11 +20,11 @@ const user = {
 const updateBlog = vi.fn()
 const removeBlog = vi.fn()
 
-describe('<Togglable />', () => {
+describe('<Blog />', () => {
   let container
 
   beforeEach(() => {
-    container = render(< Blog blog={blog} user={user} updateBlog={updateBlog} removeBlog={removeBlog} />)
+    container = render(<Blog blog={blog} user={user} updateBlog={updateBlog} removeBlog={removeBlog} />)
   })
 
   test('renders title and author by default', () => {
