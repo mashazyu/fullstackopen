@@ -17,19 +17,19 @@ const getAll = async () => {
 
 const create = async blog => {
   const response = await axios.post(baseUrl, blog, getConfig())
-  
+
   return response.data
 }
 
 const update = async blog => {
   const response = await axios.put(`${baseUrl}/${blog.id}`, blog, getConfig())
-  
+
   return response.data
 }
 
 const remove = async blog => {
   const response = await axios.delete(`${baseUrl}/${blog.id}`, getConfig())
-  
+
   return response.data
 }
 

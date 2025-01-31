@@ -9,7 +9,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  const buttonLabel = fullDetails ? "hide" : "view"
+  const buttonLabel = fullDetails ? 'hide' : 'view'
   const handleDetailsVisibility = () => setFullDetails(!fullDetails)
   const handleLike = () => {
     updateBlog({
@@ -29,7 +29,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
       <div>
         <div>{blog.title} {blog.author} <button onClick={handleDetailsVisibility}>{buttonLabel}</button></div>
         {fullDetails && (
-          <div> 
+          <div>
             {blog.url}
             <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
             {blog.user?.username}
@@ -37,7 +37,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
           </div>
         )}
       </div>
-  </div>
-)}
+    </div>
+  )}
 
 export default Blog

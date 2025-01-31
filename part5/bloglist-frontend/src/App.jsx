@@ -6,7 +6,7 @@ import blogService from './services/blogs'
 
 const App = () => {
   const [message, setMessage] = useState(null)
-  const [user, setUser] = useState(null) 
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('user')
