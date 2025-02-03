@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { setFilter } from '../reducers/filterReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 const Filter = () => {
     const dispatch = useDispatch()
@@ -10,6 +11,7 @@ const Filter = () => {
         const filter = event.target.value
 
         dispatch(setFilter(filter))
+        dispatch(setNotification(`filter is set to ${filter}`))
     }
     const style = {
       marginBottom: 10
