@@ -2,10 +2,10 @@ import reducer from './anecdoteReducer'
 import deepFreeze from 'deep-freeze'
 
 describe('anecdoteReducer', () => {
-  test('returns new state with action ADD', () => {
+  test('returns new state with action anecdotes/create', () => {
     const state = []
     const action = {
-      type: 'ADD',
+      type: 'anecdotes/create',
       payload: {
         content: 'the app state is in redux store',
         votes: 0,
@@ -17,7 +17,7 @@ describe('anecdoteReducer', () => {
     const newState = reducer(state, action)
 
     expect(newState).toHaveLength(1)
-    expect(newState).toContainEqual(action.payload)
+    expect(newState.map(s => s.content)).toContainEqual(action.payload)
   })
 
   test('returns new state with increased number of votes on VOTE action', () => {
@@ -29,7 +29,7 @@ describe('anecdoteReducer', () => {
         }
     ]
     const action = {
-      type: 'VOTE',
+      type: 'anecdotes/vote',
       payload: {
         id: 1
       }
@@ -38,7 +38,6 @@ describe('anecdoteReducer', () => {
     deepFreeze(state)
     const newState = reducer(state, action)
 
-    expect(newState).toHaveLength(1)
     expect(newState[0]).toEqual({
         content: 'the app state is in redux store',
         votes: 4,

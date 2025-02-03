@@ -1,3 +1,5 @@
+import { createSlice } from '@reduxjs/toolkit'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -19,32 +21,56 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const anecdoteReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'ADD':
-      return [...state, action.payload]
-    case 'VOTE':
-      return state.map(obj => obj.id === action.payload.id ? {...obj, votes: obj.votes + 1} : obj )
-    default: return state
-  }
-}
+const anecdotesSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    create(state, action) {
+      const content = action.payload
 
-export const create = (content) => {
-  return {
-    type: 'ADD',
-    payload: {
-      content,
-      votes: 0,
-      id: getId()
+      state.push({
+        content,
+        votes: 0,
+        id: getId(),
+      })
+    },
+    vote(state, action) {
+      const id = action.payload.id
+      
+      return state.map(obj => obj.id === id ? {...obj, votes: obj.votes + 1} : obj )
     }
   }
-}
+})
 
-export const vote = (id) => {
-  return {
-    type: 'VOTE',
-    payload: { id }
-  }
-}
+export const { create, vote } = anecdotesSlice.actions
+export default anecdotesSlice.reducer
 
-export default anecdoteReducer
+// const anecdoteReducer = (state = initialState, action) => {
+//   switch (action.type) {
+//     case 'ADD':
+//       return [...state, action.payload]
+//     case 'VOTE':
+//       return state.map(obj => obj.id === action.payload.id ? {...obj, votes: obj.votes + 1} : obj )
+//     default: return state
+//   }
+// }
+
+// export const create = (content) => {
+//   return {
+//     type: 'ADD',
+//     payload: {
+//       content,
+//       votes: 0,
+//       id: getId()
+//     }
+//   }
+// }
+
+// export const vote = (id) => {
+//   return {
+//     type: 'VOTE',
+//     payload: { id }
+//   }
+// }
+
+// export default anecdoteReducer

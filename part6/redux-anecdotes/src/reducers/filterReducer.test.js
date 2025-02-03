@@ -2,10 +2,10 @@ import filterReducer from './filterReducer'
 import deepFreeze from 'deep-freeze'
 
 describe('anecdoteReducer', () => {
-    test('returns new state with action ADD', () => {
+    test('returns new state with action filter/setFilter', () => {
       const state = "1234"
       const action = {
-        type: 'SET_FILTER',
+        type: 'filter/setFilter',
         payload: "tralala"
       }
   
