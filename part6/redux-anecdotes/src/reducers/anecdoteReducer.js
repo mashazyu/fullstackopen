@@ -7,18 +7,13 @@ const anecdotesSlice = createSlice({
   initialState: [],
   reducers: {
     create(state, action) {
-      const content = action.payload
-
-      state.push({
-        content,
-        votes: 0,
-        id: getId(),
-      })
+      state.push(action.payload)
     },
     vote(state, action) {
       const id = action.payload.id
+      const anecdote = action.payload.anecdote
       
-      return state.map(obj => obj.id === id ? {...obj, votes: obj.votes + 1} : obj )
+      return state.map(obj => obj.id === id ? anecdote: obj )
     },
     set(state, action) {
       return action.payload
