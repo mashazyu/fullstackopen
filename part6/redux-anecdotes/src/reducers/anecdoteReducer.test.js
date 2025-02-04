@@ -20,7 +20,7 @@ describe('anecdoteReducer', () => {
     expect(newState.map(s => s.content)).toContainEqual(action.payload)
   })
 
-  test('returns new state with increased number of votes on VOTE action', () => {
+  test('returns new state with increased number of votes on anecdotes/vote action', () => {
     const state = [
         {
             content: 'the app state is in redux store',
@@ -43,5 +43,30 @@ describe('anecdoteReducer', () => {
         votes: 4,
         id: 1
     })
+  })
+
+  test('returns reset state after anecdotes/set action', () => {
+      const state = []
+      const action = {
+        type: 'anecdotes/set',
+        payload: [
+          {
+              content: 'the app state is in redux store',
+              votes: 3,
+              id: 1
+          }
+        ]
+      }
+  
+      deepFreeze(state)
+      const newState = reducer(state, action)
+  
+      expect(newState).toEqual([
+        {
+            content: 'the app state is in redux store',
+            votes: 3,
+            id: 1
+        }
+      ])
   })
 })
